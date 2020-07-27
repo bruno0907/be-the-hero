@@ -44,13 +44,17 @@ module.exports = {
         const { id } = req.params
         const ong_id = req.headers.authorization
 
-        const incident = await connection('incidents')
+        try {
+            const incident = await connection('incidents')
             .where('id', id)
             .select('ong_id')
             .first()
 
         if(incident.ong_id !== ong_id) {
-            return res.status(401).json({ error: 'Operation not authorized.'})
+            return res.status(401).json({ error: 'You cannot execute such operation.'})
+        }
+        } catch (error) {
+            return res.status(401).json({error: 'ID not found'})
         }
 
         await connection('incidents')
